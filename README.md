@@ -1,2 +1,0 @@
-# trip
- full stack project
