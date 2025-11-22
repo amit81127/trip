@@ -9,7 +9,7 @@
         <img src="<%=listing.image.url%>" class="card-img-top show.img" alt="listing_image">
         <div class="card-body">
           <p class="card-text">
-           <b> <i><%=listing.owner.username%></i></b>
+           <b> <i><%=listing.owner ? listing.owner.username : 'Unknown'%></i></b>
           <br>  
       <p>    <%=listing.description%><br></p> 
            &#8377;
@@ -20,7 +20,7 @@
         </div>
       </div>
    <br>
- <%if(currentUser&&listing.owner._id.equals(currentUser._id)){%>
+ <%if(currentUser && listing.owner && listing.owner._id.equals(currentUser._id)){%>
    <div class="btns">
     <a href="/listings/<%=listing._id%>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit </a>
     

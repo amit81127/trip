@@ -1,5 +1,6 @@
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+// const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const Listing=require("../models/listing");
+
 module.exports.index=async(req,res)=>{
     const allListings=await Listing.find({});
     res.render("listings/index.ejs",{allListings});
@@ -8,18 +9,20 @@ module.exports.index=async(req,res)=>{
  module.exports.renderNewform=(req,res)=>{
     res.render("listings/new.ejs"); 
 };
+
 module.exports.showListing=async(req,res)=>{
     let {id}= req.params;
     const listing = await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
     if(!listing){
         req.flash("error", " Listing not exist!");
-        res.redirect("/listings");
+        return res.redirect("/listings");
     }
     res.render("listings/show.ejs",{listing});
 };
+
 module.exports.createListing=async(req,res,next)=>{
-    let url=req.file.path;
-    let filename=req.file.filename;
+    let url = req.file ? req.file.path : "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGdvYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60";
+    let filename = req.file ? req.file.filename : "listingimage";
 
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
@@ -28,12 +31,13 @@ module.exports.createListing=async(req,res,next)=>{
     req.flash("success", "New Listing created");
      res.redirect("/listings");
 }
+
 module.exports.editListing=async(req,res)=>{
     let {id} = req.params;
     const listing =await Listing.findById(id);
     if(!listing){
         req.flash("error", " Listing not exist!");
-        res.redirect("/listings");
+        return res.redirect("/listings");
     }
     let originalImageUrl=listing.image.url;
     originalImageUrl=originalImageUrl.replace("upload","upload/w_250,h_300,c_thumb");
@@ -53,6 +57,7 @@ module.exports.updateListing=async(req,res)=>{
      req.flash("success", " Listing Updated Success");
     res.redirect(`/listings/${id}`);
 };
+
 module.exports.deleteListing=async(req,res)=>{
     let {id}= req.params;
    const deletelisting= await Listing.findByIdAndDelete(id);
